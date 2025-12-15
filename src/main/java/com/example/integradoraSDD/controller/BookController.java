@@ -1,5 +1,3 @@
-// DENTRO DE BookController.java
-
 package com.example.integradoraSDD.controller;
 
 import com.example.integradoraSDD.model.Book;
@@ -18,14 +16,12 @@ public class BookController {
     @Autowired
     private LibraryService libraryService;
 
-    // 2.1. Libros - POST /api/books
     @PostMapping
     public ResponseEntity<Book> createBook(@RequestBody Book newBook) {
         Book createdBook = libraryService.crearLibro(newBook);
         return new ResponseEntity<>(createdBook, HttpStatus.CREATED);
     }
 
-    // 2.1. Libros - GET /api/books
     @GetMapping
     public ResponseEntity<List<Book>> getAllBooks() {
         List<Book> books = libraryService.getAllLibros();
@@ -35,7 +31,6 @@ public class BookController {
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
-    // 2.1. Libros - GET /api/books/{id}
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable int id) {
         Book book = libraryService.getByID(id);
@@ -45,7 +40,6 @@ public class BookController {
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-    // 2.1. Libros - PATCH /api/books/{id}/status (Baja Lógica)
     @PatchMapping("/{id}/status")
     public ResponseEntity<Void> deleteBookLogic(@PathVariable int id) {
         try {
@@ -56,5 +50,4 @@ public class BookController {
         }
     }
 
-    // NOTA: Los endpoints PUT (Update) y GET (Search) son opcionales y los omitimos por ahora para enfocarnos en la funcionalidad principal.
 }

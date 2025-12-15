@@ -1,5 +1,8 @@
 package com.example.integradoraSDD.structures;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ArrayStack<T> {
     private T[] data;
     private int top;
@@ -64,6 +67,17 @@ public class ArrayStack<T> {
             }
         }
         System.out.println();
+    }
+
+    public List<T> toList() {
+        List<T> list = new ArrayList<>();
+
+        // Itera desde el fondo del arreglo hasta el tope (donde termina el size)
+        // Asumo que el arreglo interno se llama 'data'
+        for (int i = 0; i <= top; i++) {
+            list.add(data[i]);
+        }
+        return list;
     }
 
 }

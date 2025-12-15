@@ -7,6 +7,7 @@ public class Loan {
     private String status; // "ACTIVE" o "RETURNED"
     private String loanDate;
     private String returnDate; // null si no se ha devuelto
+    private boolean isReturned = false;
 
 
     public Loan(int id, int userId, int bookId, String loanDate) {
@@ -44,6 +45,14 @@ public class Loan {
 
     public String getStatus() {
         return status;
+    }
+
+    public boolean isReturned() {
+        return isReturned;
+    }
+
+    public void setReturned(boolean returned) {
+        isReturned = returned;
     }
 
     public void setStatus(String status) {

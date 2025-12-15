@@ -1,5 +1,3 @@
-// DENTRO DE LibraryService.java - VERSIÓN FINAL PARA COMPILACIÓN
-
 package com.example.integradoraSDD.service;
 
 import com.example.integradoraSDD.model.Book;
@@ -7,6 +5,7 @@ import com.example.integradoraSDD.model.HistoryAction;
 import com.example.integradoraSDD.model.Loan;
 import com.example.integradoraSDD.model.User;
 import com.example.integradoraSDD.structures.SinglyLinkedList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +23,9 @@ public class LibraryService {
     private int nextUserId = 3;
     private int nextLoanId = 1;
 
-    // Asumimos que HistoryService y ArrayStack están correctos
-    private HistoryService historyService = new HistoryService();
+    @Autowired
+    private HistoryService historyService;
+
 
 
     private String getCurrentTimestamp() {
@@ -34,20 +34,20 @@ public class LibraryService {
 
 
     public LibraryService() {
-        // Inicialización de datos...
-        books.add(new Book(1, "El nombre del viento", "Pathrik Rothfuss", "planeta", 15));
-        books.add(new Book(2, "El temor de un hombre sabio", "Pathrik Rothfuss", "planeta", 12));
-        books.add(new Book(3, "La música del silencio", "Pathrik Rothfuss", "planeta", 5));
-        books.add(new Book(4, "El arbol del relampago", "Pathrik Rothfuss", "planeta", 1));
-        books.add(new Book(5, "Las puertas de piedra", "Pathrik Rothfuss", "planeta", 10));
+
+        books.add(new Book(1, "El nombre del viento", "Pathrik Rothfuss", "fantasia", 15));
+        books.add(new Book(2, "El temor de un hombre sabio", "Pathrik Rothfuss", "fantasia", 12));
+        books.add(new Book(3, "La música del silencio", "Pathrik Rothfuss", "fantasia", 5));
+        books.add(new Book(4, "El arbol del relampago", "Pathrik Rothfuss", "fantasia", 1));
+        books.add(new Book(5, "Las puertas de piedra", "Pathrik Rothfuss", "fantasia", 10));
 
         users.add(new User(1, "Angel Chacon", "angelc@gmail.com"));
         users.add(new User(2, "Daniel Ayala", "daniela@gmail.com"));
+        users.add(new User(3, "Getse Cruz", "getsec@gmail.com"));
     }
 
 
-    // ------------------- MÉTODOS DE BÚSQUEDA -------------------
-    // ... (getBookById, getUserById, getLoanById sin cambios) ...
+    // ------------------- MÉTODOS --------------------------------
 
     public Book getBookById(int id) {
         var current = books.getHead();
@@ -95,15 +95,12 @@ public class LibraryService {
         return nuevoLibro;
     }
 
-    // Create User
     public User crearUsuario(User nuevoUsuario) {
         nuevoUsuario.setId(nextUserId++);
         users.add(nuevoUsuario);
         return nuevoUsuario;
     }
-// DENTRO DE LibraryService.java
 
-    // Read All Users
     public List<User> getAllUsers(){
         List<User> listaSalida = new ArrayList<>();
         var current = users.getHead();
@@ -143,17 +140,17 @@ public class LibraryService {
 
     public void deleteLibro(int id){
         Book libroAEliminar = getBookById(id);
+
         if (libroAEliminar != null){
-            books.removeLogic(libroAEliminar);
-        }else{
-            throw new RuntimeException("No se puede actualizar, el libro no existe");
+            libroAEliminar.setActive(false);
+        } else {
+            throw new RuntimeException("No se puede dar de baja, el libro no existe.");
         }
     }
 
 
     // ------------------- MÉTODOS DE PRÉSTAMO --------------------
 
-    // MÉTODO AUXILIAR REQUERIDO (Soluciona el error de símbolo)
     private boolean hasActiveLoanOrReservation(int userId, int bookId) {
         // 1. Buscar Préstamo Activo
         var current = loans.getHead();
@@ -178,7 +175,6 @@ public class LibraryService {
         if (hasActiveLoanOrReservation(userId, bookId)) return null; // Llama al método
 
         if (book.getAvailableCopies() > 0) {
-            // CREAR PRÉSTAMO
             int previousCopies = book.getAvailableCopies();
             book.decreaseAvailableCopies();
 
@@ -190,7 +186,6 @@ public class LibraryService {
             historyService.push(new HistoryAction(userId, bookId, loanId, previousCopies, timestamp));
             return newLoan;
         } else {
-            // CREAR RESERVACIÓN
             book.addToWaitlist(userId);
             String timestamp = getCurrentTimestamp();
             historyService.push(new HistoryAction(userId, bookId, timestamp));
@@ -234,11 +229,31 @@ public class LibraryService {
     }
 
 
-    /**
-     * Endpoint: POST /api/history/undo
-     * Deshace la última acción transaccional registrada en el ArrayStack (LIFO).
-     * SOLUCIONA ERROR: cannot find symbol method undoLastAction()
-     */
+    public List<Integer> getWaitlistForBook(int bookId) {
+        Book book = getBookById(bookId);
+        if (book == null || !book.isActive()) {
+            return null;
+        }
+        return book.getWaitlist().toList();
+    }
+
+
+    public String cancelReservation(int userId, int bookId) {
+        Book book = getBookById(bookId);
+
+        if (book == null || !book.isActive()) {
+            return "Error: Libro ID " + bookId + " no encontrado o inactivo.";
+        }
+
+        boolean removed = book.getWaitlist().removeByValue(userId);
+
+        if (removed) {
+            return "Reserva cancelada exitosamente para el Usuario ID " + userId + " en el Libro ID " + bookId + ".";
+        } else {
+            return "Error: El Usuario ID " + userId + " no estaba en la lista de espera del Libro ID " + bookId + ".";
+        }
+    }
+
     public String undoLastAction() {
 
         if (historyService.isEmpty()) {
@@ -278,8 +293,8 @@ public class LibraryService {
                 return "Error crítico al deshacer ADD_TO_WAITLIST: Faltan datos clave.";
             }
 
-            // Asumo que tu ArrayQueue tiene un método removeById
-            boolean removed = book.getWaitlist().removeById(userId);
+
+            boolean removed = book.getWaitlist().removeByValue(userId);
 
             if (removed) {
                 return "UNDO Exitoso: Usuario " + userId + " removido de la lista de espera de " + book.getTitle() + ".";
@@ -316,10 +331,40 @@ public class LibraryService {
     }
 
 
-    // ------------------- MÉTODOS DE CONSULTA --------------------
-
     public List<Loan> getAllLoans() {
-        // SOLUCIONA ERROR: cannot find symbol variable loanList
         return this.loans.toList();
+    }
+
+
+    public List<Loan> getActiveLoans() {
+        List<Loan> activeLoans = new ArrayList<>();
+        List<Loan> allLoans = loans.toList();
+        for (Loan loan : allLoans) {
+            if (!loan.isReturned()) {
+                activeLoans.add(loan);
+            }
+
+        }
+
+        return activeLoans;
+    }
+
+
+
+    public List<Loan> getLoansByUserId(int userId) {
+        List<Loan> userLoans = new ArrayList<>();
+        List<Loan> allLoans = loans.toList();
+
+        for (Loan loan : allLoans) {
+
+            if (loan.getUserId() == userId) {
+                userLoans.add(loan);
+            }
+        }
+
+        return userLoans;
+    }
+    public List<HistoryAction> getHistory() {
+        return historyService.getHistory();
     }
 }

@@ -1,5 +1,8 @@
 package com.example.integradoraSDD.structures;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ArrayQueue<T> {
     private T[] data;
     private int front;
@@ -70,13 +73,24 @@ public class ArrayQueue<T> {
     public boolean isFull(){
         return size == capacity;
     }
+
+    public List<T> toList() {
+        List<T> list = new ArrayList<>();
+        if (isEmpty()) {
+            return list;
+        }
+
+        // Iteramos desde el frente, recorriendo 'size' elementos
+        for (int i = 0; i < size; i++) {
+            int index = (front + i) % capacity;
+            list.add(data[index]);
+        }
+        return list;
+    }
     // DENTRO DE ArrayQueue<T> { ...
 
-    /**
-     * Remueve un elemento específico por su valor (necesario para el UNDO).
-     * NOTA: Esto es una operación costosa O(n) en una cola implementada con array.
-     */
-    public boolean removeById(T value) {
+
+    public boolean removeByValue(T value) {
         if (isEmpty()) {
             return false;
         }

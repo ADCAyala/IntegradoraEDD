@@ -97,4 +97,27 @@ public class LibraryController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/active")
+    public ResponseEntity<List<Loan>> getActiveLoans() {
+        // Implementa este método en tu LibraryService
+        List<Loan> activeLoans = libraryService.getActiveLoans();
+
+        if (activeLoans.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content
+        }
+        return new ResponseEntity<>(activeLoans, HttpStatus.OK);
+    }
+
+    // 2. GET /api/loans/user/{userId} (Lista los préstamos de un usuario)
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Loan>> getLoansByUser(@PathVariable int userId) {
+        // Implementa este método en tu LibraryService
+        List<Loan> userLoans = libraryService.getLoansByUserId(userId);
+
+        if (userLoans.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content
+        }
+        return new ResponseEntity<>(userLoans, HttpStatus.OK);
+    }
+
 }
