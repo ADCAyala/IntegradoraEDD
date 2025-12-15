@@ -40,4 +40,30 @@ public class LibraryController {
             return new ResponseEntity<>("Proceso finalizado. Revise la lista de espera o si ya tenía un préstamo activo.", HttpStatus.OK);
         }
     }
+    // DENTRO DE LoanController.java
+
+    // Endpoint: POST /api/loans/{loanId}/return
+    @PostMapping("/{loanId}/return")
+    public ResponseEntity<?> returnLoan(@PathVariable int loanId) {
+
+        Loan returnedLoan = libraryService.returnLoan(loanId);
+
+        if (returnedLoan == null) {
+            // Asumimos que si retorna null es por 404 o 400 (ya devuelto/no existe)
+            return new ResponseEntity<>("Error al devolver el préstamo. Verifique el ID o si ya está devuelto.", HttpStatus.BAD_REQUEST);
+        }
+
+        // Devolvemos el préstamo actualizado (con status 'RETURNED')
+        String message;
+        if ("RETURNED".equals(returnedLoan.getStatus())) {
+            // El servicio ya gestionó la reserva, solo indicamos la devolución exitosa
+            message = "Devolución exitosa para el Préstamo ID " + loanId + ".";
+            System.out.println(message);
+        } else {
+            message = "Devolución registrada con advertencias.";
+        }
+
+        return new ResponseEntity<>(returnedLoan, HttpStatus.OK);
+    }
+
 }

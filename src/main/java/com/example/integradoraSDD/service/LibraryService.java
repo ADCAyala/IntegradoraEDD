@@ -186,4 +186,81 @@ public class LibraryService {
         // Por ahora, nos quedamos solo con la validación de préstamos activos.
         return false;
     }
+    // DENTRO DE LibraryService { ...
+
+    /**
+     * Endpoint: POST /api/loans/{loanId}/return
+     * Implementa el flujo de devolución sin registro en el historial (sin rollback).
+     * @param loanId ID del préstamo a devolver.
+     * @return El Loan devuelto o null si falla (404/400).
+     */
+    public Loan returnLoan(int loanId) {
+
+        // 1) Buscar el Loan por loanId.
+        Loan loan = getLoanById(loanId);
+
+        if (loan == null) {
+            System.out.println("Error 404: Préstamo no encontrado.");
+            return null;
+        }
+        if ("RETURNED".equals(loan.getStatus())) {
+            System.out.println("Error 400: El préstamo ya fue devuelto.");
+            return null;
+        }
+
+        // 2) Marcar el préstamo como devuelto
+        String fechaActual = getCurrentTimestamp();
+        loan.setStatus("RETURNED");
+        loan.setReturnDate(fechaActual);
+
+        // 3) Buscar el Book asociado
+        Book book = getBookById(loan.getBookId());
+        if (book == null) {
+            System.out.println("Advertencia: Libro asociado al préstamo no encontrado. La devolución se registra, pero el stock no se actualiza.");
+            return loan;
+        }
+
+        // 4) Revisar la lista de espera (waitlist) del libro:
+        if (!book.getWaitlist().isEmpty()) {
+
+            // ================================================================
+            // CASO A: waitlist NO está vacía
+            // ================================================================
+            System.out.println("Detectada lista de espera. Procesando siguiente reserva automáticamente...");
+
+            // 4.1) Obtener el siguiente usuario en espera:
+            Integer nextUserId = book.getWaitlist().dequeue();
+
+            if (nextUserId != null) {
+
+                // 4.2) Crear un nuevo Loan para ese usuario
+                int newLoanId = nextLoanId++;
+                Loan newLoan = new Loan(newLoanId, nextUserId, book.getId(), fechaActual);
+
+                // 4.3) Agregar newLoan a la estructura de préstamos.
+                loans.add(newLoan);
+
+                // 4.4) NO se modifica availableCopies.
+                // 4.5) No se registra nada en historial.
+
+                System.out.println("Préstamo automático creado (ID: " + newLoanId + ") para el usuario: " + nextUserId);
+            }
+
+        } else {
+
+            // ================================================================
+            // CASO B: waitlist está vacía
+            // ================================================================
+
+            // 4.1) Incrementar el número de copias disponibles (USANDO SETTER DIRECTO)
+            int prevCopies = book.getAvailableCopies();
+            book.setAvailableCopies(prevCopies + 1);
+
+            // 4.2) No se registra nada en historial (simplificado).
+        }
+
+        // 5) Responder con el Loan devuelto
+        return loan;
+    }
+
 }

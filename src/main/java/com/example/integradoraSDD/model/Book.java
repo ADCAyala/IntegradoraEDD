@@ -1,5 +1,7 @@
 package com.example.integradoraSDD.model;
 
+import com.example.integradoraSDD.structures.ArrayQueue;
+
 import java.util.LinkedList;
 import java.util.Queue; // Usaremos la interfaz Queue de Java para simular ArrayQueue
 
@@ -15,7 +17,7 @@ public class Book {
     private boolean active;
 
     // Asumiendo que ArrayQueue<Integer> es similar a java.util.Queue<Integer>
-    private Queue<Integer> waitlist;
+    private ArrayQueue<Integer> waitlist;
 
     // Constructor
     public Book(int id, String title, String author, String category, int totalCopies) {
@@ -26,7 +28,7 @@ public class Book {
         this.totalCopies = totalCopies;
         this.availableCopies = totalCopies; // Inicialmente, todas las copias están disponibles
         this.active = true; // Inicialmente, el libro está activo
-        this.waitlist = new LinkedList<>(); // Inicializamos la cola de espera
+        this.waitlist = new ArrayQueue<>(50); // Inicializamos la cola de espera
     }
 
     public int getId() {
@@ -57,7 +59,7 @@ public class Book {
         return active;
     }
 
-    public Queue<Integer> getWaitlist() {
+    public ArrayQueue<Integer> getWaitlist() {
         return waitlist;
     }
 
@@ -106,9 +108,8 @@ public class Book {
         }
     }
 
-    // Métodos para la lista de espera
     public void addToWaitlist(int userId) {
-        this.waitlist.offer(userId);
+        this.waitlist.enqueue(userId);
     } // offer en Queue es como push/enqueue
 
     public Integer getNextInWaitlist() {
@@ -116,7 +117,7 @@ public class Book {
     } // peek para ver el primero
 
     public Integer removeNextInWaitlist() {
-        return this.waitlist.poll();
+        return this.waitlist.dequeue();
     } // poll es como pop/dequeue
 
 
