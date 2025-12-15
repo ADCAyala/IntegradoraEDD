@@ -7,20 +7,20 @@ import java.util.Queue; // Usaremos la interfaz Queue de Java para simular Array
 
 
 public class Book {
-    private int id;
+    private Integer id;
     private String title;
     private String author;
     private String category;
 
-    private int totalCopies;
-    private int availableCopies;
+    private Integer totalCopies;
+    private Integer availableCopies;
     private boolean active;
 
     // Asumiendo que ArrayQueue<Integer> es similar a java.util.Queue<Integer>
     private ArrayQueue<Integer> waitlist;
 
     // Constructor
-    public Book(int id, String title, String author, String category, int totalCopies) {
+    public Book(Integer id, String title, String author, String category, Integer totalCopies) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -31,7 +31,7 @@ public class Book {
         this.waitlist = new ArrayQueue<>(50); // Inicializamos la cola de espera
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -47,11 +47,11 @@ public class Book {
         return category;
     }
 
-    public int getTotalCopies() {
+    public Integer getTotalCopies() {
         return totalCopies;
     }
 
-    public int getAvailableCopies() {
+    public Integer getAvailableCopies() {
         return availableCopies;
     }
 
@@ -64,7 +64,7 @@ public class Book {
     }
 
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -80,11 +80,11 @@ public class Book {
         this.category = category;
     }
 
-    public void setTotalCopies(int totalCopies) {
+    public void setTotalCopies(Integer totalCopies) {
         this.totalCopies = totalCopies;
     }
 
-    public void setAvailableCopies(int availableCopies) {
+    public void setAvailableCopies(Integer availableCopies) {
         this.availableCopies = availableCopies;
     }
 
