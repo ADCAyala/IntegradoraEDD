@@ -41,6 +41,26 @@ public class HistoryAction {
         return actionType; // Devuelve String, no ActionType, para coincidir con el campo
     }
 
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public Integer getBookId() {
+        return bookId;
+    }
+
+    public Integer getLoanId() {
+        return loanId;
+    }
+
+    public Integer getPreviousAvailableCopies() {
+        return previousAvailableCopies;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
     // ... Asegúrate de que los setters para actionType, userId, bookId, etc. existan...
     public void setActionType(String actionType) {
         this.actionType = actionType;
@@ -61,5 +81,7 @@ public class HistoryAction {
     public void setPreviousAvailableCopies(Integer previousAvailableCopies) {
         this.previousAvailableCopies = previousAvailableCopies;
     }
+
+
     // ...
 }

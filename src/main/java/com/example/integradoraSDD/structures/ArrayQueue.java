@@ -70,4 +70,45 @@ public class ArrayQueue<T> {
     public boolean isFull(){
         return size == capacity;
     }
+    // DENTRO DE ArrayQueue<T> { ...
+
+    /**
+     * Remueve un elemento específico por su valor (necesario para el UNDO).
+     * NOTA: Esto es una operación costosa O(n) en una cola implementada con array.
+     */
+    public boolean removeById(T value) {
+        if (isEmpty()) {
+            return false;
+        }
+
+        T[] temp = (T[]) new Object[capacity];
+        int newRear = 0;
+        int itemsCopied = 0;
+        boolean found = false;
+
+        // Itera desde el frente de la cola
+        for (int i = 0; i < size; i++) {
+            int index = (front + i) % capacity;
+            T currentValue = data[index];
+
+            // Si encontramos el valor y aún no lo hemos removido
+            if (currentValue != null && currentValue.equals(value) && !found) {
+                found = true; // Marca como encontrado, no lo copiamos al array temporal
+            } else {
+                temp[newRear++] = currentValue;
+                itemsCopied++;
+            }
+        }
+
+        if (found) {
+            // Si se removió, actualiza la estructura interna
+            data = temp;
+            size = itemsCopied;
+            front = 0;
+            rear = itemsCopied;
+            return true;
+        }
+
+        return false; // El elemento no fue encontrado
+    }
 }

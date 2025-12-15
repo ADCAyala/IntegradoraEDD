@@ -65,5 +65,21 @@ public class LibraryController {
 
         return new ResponseEntity<>(returnedLoan, HttpStatus.OK);
     }
+// DENTRO DE LibraryController.java
+
+    // Endpoint: POST /api/history/undo
+    @PostMapping("/history/undo")
+    public ResponseEntity<String> undoAction() {
+
+        // El 'new' extra y la sintaxis anterior en las líneas 72-73 deben ser eliminados.
+        // Asegúrate de que solo tengas esto:
+        String result = libraryService.undoLastAction();
+
+        if (result.startsWith("Error")) {
+            return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
 }

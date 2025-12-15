@@ -263,4 +263,75 @@ public class LibraryService {
         return loan;
     }
 
+    // DENTRO DE LibraryService { ...
+
+    /**
+     * Endpoint: POST /api/history/undo
+     * Deshace la última acción transaccional registrada en el ArrayStack (LIFO).
+     */
+    public String undoLastAction() {
+
+        // 1. Validar Pila
+        if (historyService.isEmpty()) {
+            return "Error: No hay acciones recientes para deshacer.";
+        }
+
+        // 2. Sacar la Acción de la Pila (LIFO)
+        HistoryAction lastAction = historyService.pop();
+
+        if (lastAction == null) {
+            return "Error: No se pudo obtener la última acción de la pila.";
+        }
+
+        String actionType = lastAction.getActionType();
+        Integer bookId = lastAction.getBookId();
+        Book book = (bookId != null) ? getBookById(bookId) : null;
+
+        // 3. Determinar y Ejecutar la Reversión
+
+        if ("CREATE_LOAN".equals(actionType)) {
+            // --- REVERTIR CREATE_LOAN ---
+
+            Integer loanId = lastAction.getLoanId();
+            Integer prevCopies = lastAction.getPreviousAvailableCopies();
+
+            if (loanId == null || book == null || prevCopies == null) {
+                return "Error crítico al deshacer CREATE_LOAN: Faltan datos clave para reversión.";
+            }
+
+            // a) ELIMINAR el Loan creado (Asumiendo que getLoanById funciona)
+            Loan loanToRemove = getLoanById(loanId);
+            if (loanToRemove != null) {
+                loans.removeAll(loanToRemove); // Usar el método de eliminación de tu SinglyLinkedList
+                System.out.println("UNDO: Préstamo (ID: " + loanId + ") eliminado de la lista.");
+            }
+
+            // b) RESTAURAR el stock a su valor anterior
+            book.setAvailableCopies(prevCopies);
+
+            return "UNDO Exitoso: Préstamo (ID: " + loanId + ") revertido. Stock de " + book.getTitle() + " restaurado a " + prevCopies;
+
+        } else if ("ADD_TO_WAITLIST".equals(actionType)) {
+            // --- REVERTIR ADD_TO_WAITLIST ---
+
+            Integer userId = lastAction.getUserId();
+
+            if (book == null || userId == null) {
+                return "Error crítico al deshacer ADD_TO_WAITLIST: Faltan datos clave.";
+            }
+
+            // Reversión: Eliminar al usuario de la ArrayQueue (requiere removeById)
+            boolean removed = book.getWaitlist().removeById(userId);
+
+            if (removed) {
+                return "UNDO Exitoso: Usuario " + userId + " removido de la lista de espera de " + book.getTitle() + ".";
+            } else {
+                return "Advertencia: Usuario " + userId + " ya no estaba en la lista de espera (no se pudo revertir).";
+            }
+
+        } else {
+            return "Advertencia: Acción desconocida (" + actionType + ") encontrada en la pila. No se pudo deshacer.";
+        }
+    }
+
 }
