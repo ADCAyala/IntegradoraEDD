@@ -1,5 +1,3 @@
-// DENTRO DE UserController.java
-
 package com.example.integradoraSDD.controller;
 
 import com.example.integradoraSDD.model.User;
@@ -18,7 +16,7 @@ public class UserController {
     @Autowired
     private LibraryService libraryService;
 
-    // 2.2. Usuarios - POST /api/users
+
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User newUser) {
         // Asumiendo que has agregado el método crearUsuario en LibraryService
@@ -26,7 +24,7 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    // 2.2. Usuarios - GET /api/users
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = libraryService.getAllUsers(); // Asumiendo que existe el método getAllUsers
@@ -36,7 +34,6 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    // 2.2. Usuarios - GET /api/users/{id}
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable int id) {
         User user = libraryService.getUserById(id);

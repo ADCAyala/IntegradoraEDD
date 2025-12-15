@@ -1,5 +1,3 @@
-// DENTRO DE ReservationController.java
-
 package com.example.integradoraSDD.controller;
 
 import com.example.integradoraSDD.service.LibraryService;
@@ -17,7 +15,7 @@ public class ReservationController {
     @Autowired
     private LibraryService libraryService;
 
-    // 2.4. Reservas - GET /api/reservations/book/{bookId}
+
     @GetMapping("/book/{bookId}")
     public ResponseEntity<List<Integer>> getWaitlistByBook(@PathVariable int bookId) {
 
@@ -34,7 +32,7 @@ public class ReservationController {
         return new ResponseEntity<>(waitlist, HttpStatus.OK);
     }
 
-    // 2.4. Reservas - DELETE /api/reservations?userId={uid}&bookId={bid}
+
     @DeleteMapping
     public ResponseEntity<String> cancelReservation(
             @RequestParam("userId") int userId,
@@ -46,6 +44,6 @@ public class ReservationController {
             return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(result, HttpStatus.OK); // 200 OK con mensaje de éxito
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

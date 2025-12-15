@@ -149,10 +149,8 @@ public class LibraryService {
     }
 
 
-    // ------------------- MÉTODOS DE PRÉSTAMO --------------------
 
     private boolean hasActiveLoanOrReservation(int userId, int bookId) {
-        // 1. Buscar Préstamo Activo
         var current = loans.getHead();
         while(current != null){
             Loan loan = (Loan) current.data;

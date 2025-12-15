@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 @Service
 public class HistoryService {
-    // Usando tu ArrayStack con capacidad de 100
+
     private ArrayStack<HistoryAction> stack;
 
     public HistoryService() {

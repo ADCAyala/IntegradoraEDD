@@ -4,9 +4,9 @@ public class Loan {
     private int id;
     private int userId;
     private int bookId;
-    private String status; // "ACTIVE" o "RETURNED"
+    private String status;
     private String loanDate;
-    private String returnDate; // null si no se ha devuelto
+    private String returnDate;
     private boolean isReturned = false;
 
 

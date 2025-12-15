@@ -44,9 +44,9 @@ public class BookController {
     public ResponseEntity<Void> deleteBookLogic(@PathVariable int id) {
         try {
             libraryService.deleteLibro(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

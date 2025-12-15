@@ -72,8 +72,7 @@ public class ArrayStack<T> {
     public List<T> toList() {
         List<T> list = new ArrayList<>();
 
-        // Itera desde el fondo del arreglo hasta el tope (donde termina el size)
-        // Asumo que el arreglo interno se llama 'data'
+
         for (int i = 0; i <= top; i++) {
             list.add(data[i]);
         }
