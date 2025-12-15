@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,6 +40,20 @@ public class LibraryController {
             // CORRECCIÓN DE SINTAXIS: La palabra 'body:' debe ser eliminada
             return new ResponseEntity<>("Proceso finalizado. Revise la lista de espera o si ya tenía un préstamo activo.", HttpStatus.OK);
         }
+    }
+
+    // Endpoint: GET /api/loans
+    @GetMapping // Esto mapea a la ruta base /api/loans
+    public ResponseEntity<List<Loan>> getAllLoans() {
+        // Asumiendo que libraryService tiene un método para obtener todos los préstamos
+        // y que la SinglyLinkedList se convierte correctamente a List<Loan>
+        List<Loan> allLoans = libraryService.getAllLoans();
+
+        if (allLoans.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content
+        }
+
+        return new ResponseEntity<>(allLoans, HttpStatus.OK); // 200 OK
     }
     // DENTRO DE LoanController.java
 

@@ -2,6 +2,9 @@ package com.example.integradoraSDD.structures;
 
 import com.example.integradoraSDD.model.Book;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SinglyLinkedList <T> {
     Node head;
 
@@ -108,6 +111,16 @@ public class SinglyLinkedList <T> {
             temp = temp.next;
         }
         return count;
+    }
+
+    public List<T> toList() {
+        List<T> list = new ArrayList<>();
+        Node<T> temp = head; // Usa el tipo genérico Node<T> para seguridad
+        while (temp != null) {
+            list.add(temp.data);
+            temp = temp.next;
+        }
+        return list;
     }
 
 }

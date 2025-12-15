@@ -1,22 +1,25 @@
 package com.example.integradoraSDD.model;
 
 public class HistoryAction {
-    // Usaremos un Enum para las acciones, es una buena práctica
+
+    // DEFINICIÓN DE ACCIONES: ¡Agregaremos las que usa LibraryService!
     public enum ActionType {
         CREATE_LOAN,
-        ADD_TO_WAITLIST
+        ADD_TO_WAITLIST,
+        POP_WAITLIST, // Usado en returnLoan para activar la cola
+        RETURN_LOAN, // Usado en returnLoan para registrar la devolución
+        CREATE_BOOK  // Usado en crearLibro
     }
 
-    private String actionType; // Campo tipo String
+    private String actionType; // Campo tipo String (Almacena el String del Enum)
     private Integer userId;
     private Integer bookId;
     private Integer loanId;
     private Integer previousAvailableCopies;
     private String timestamp;
 
-    // Constructor para CREATE_LOAN
+    // CONSTRUCTOR 1: Para acciones de CREATE_LOAN (Requiere todos los datos)
     public HistoryAction(Integer userId, Integer bookId, Integer loanId, Integer previousAvailableCopies, String timestamp) {
-        // CORRECCIÓN 1: Convertir el Enum a String
         this.actionType = ActionType.CREATE_LOAN.toString();
         this.userId = userId;
         this.bookId = bookId;
@@ -25,9 +28,8 @@ public class HistoryAction {
         this.timestamp = timestamp;
     }
 
-    // Constructor para ADD_TO_WAITLIST
+    // CONSTRUCTOR 2: Para acciones de ADD_TO_WAITLIST (Requiere UserID, BookID, Timestamp)
     public HistoryAction(Integer userId, Integer bookId, String timestamp) {
-        // CORRECCIÓN 2: Convertir el Enum a String
         this.actionType = ActionType.ADD_TO_WAITLIST.toString();
         this.userId = userId;
         this.bookId = bookId;
@@ -36,52 +38,23 @@ public class HistoryAction {
         this.timestamp = timestamp;
     }
 
-    // Getters y Setters (Asegúrate de que existan todos los setters que usa LibraryService)
-    public String getActionType() {
-        return actionType; // Devuelve String, no ActionType, para coincidir con el campo
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public Integer getBookId() {
-        return bookId;
-    }
-
-    public Integer getLoanId() {
-        return loanId;
-    }
-
-    public Integer getPreviousAvailableCopies() {
-        return previousAvailableCopies;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    // ... Asegúrate de que los setters para actionType, userId, bookId, etc. existan...
-    public void setActionType(String actionType) {
-        this.actionType = actionType;
-    }
-
-    public void setUserId(Integer userId) {
+    // CONSTRUCTOR 3: Para acciones de RETURN_LOAN / POP_WAITLIST / CREATE_BOOK (Si necesitas flexibilidad)
+    // Usaremos este para simplificar el código del service
+    public HistoryAction(Integer userId, Integer bookId, Integer loanId, Integer previousAvailableCopies, String timestamp, String customActionType) {
+        this.actionType = customActionType;
         this.userId = userId;
-    }
-
-    public void setBookId(Integer bookId) {
         this.bookId = bookId;
-    }
-
-    public void setLoanId(Integer loanId) {
         this.loanId = loanId;
-    }
-
-    public void setPreviousAvailableCopies(Integer previousAvailableCopies) {
         this.previousAvailableCopies = previousAvailableCopies;
+        this.timestamp = timestamp;
     }
 
-
-    // ...
+    // --- GETTERS & SETTERS (Asegúrate de que existan) ---
+    public String getActionType() { return actionType; }
+    public Integer getUserId() { return userId; }
+    public Integer getBookId() { return bookId; }
+    public Integer getLoanId() { return loanId; }
+    public Integer getPreviousAvailableCopies() { return previousAvailableCopies; }
+    public String getTimestamp() { return timestamp; }
+    // ... otros getters y setters ...
 }
